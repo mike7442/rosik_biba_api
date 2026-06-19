@@ -186,7 +186,7 @@ def server_main():
                     is_client_active   = True
                     # Запускаем поток отправки пакетов только после подключения
                     if send_thread is None or not send_thread.is_alive():
-                         send _thread = threading.Thread(target=send_packets_loop, daemon=True)
+                         send_thread = threading.Thread(target=send_packets_loop, daemon=True)
                          send_thread.start()
                 except socket.timeout:
                      # accept не использует timeout, но на всякий случай
