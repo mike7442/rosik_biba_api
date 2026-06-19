@@ -153,7 +153,7 @@ def server_main():
 
                     #  packed_data содержит 46 байт, начинающихся с b'\xDE\xAD'
                     # Отправляем эти 46 байт напрямую, так как find_header на клиенте будет искать b'\xDE\xAD'
-                     client_socket.sendall(packed_data)
+                    client_socket.sendall(packed_data)
                     if LOGGING_ENABLED:
                         print(f"[DEBUG] Сервер отправил 46 байт (упакованные данные). ")
                 except (BrokenPipeError, ConnectionResetError, OSError) as e:
