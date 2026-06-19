@@ -146,7 +146,7 @@ def server_main():
                     # --- Конец блокировки ---
                     if packed_data is None:
                          if LOGGING_ENABLED:
-                             print("[ERROR] Не удалось упаковать данные сервера. ")
+                             print("[ERROR] Не удалось упаковать данные сервера.")
                          is_client_active = False
                          client_socket.close()
                          client_socket = None
@@ -156,10 +156,10 @@ def server_main():
                     # Отправляем эти 46 байт напрямую, так как find_header на клиенте будет искать b'\xDE\xAD'
                     client_socket.sendall(packed_data)
                     if LOGGING_ENABLED:
-                        print(f"[DEBUG] Сервер отправил 46 байт (упакованные данные). ")
+                        print(f"[DEBUG] Сервер отправил 46 байт (упакованные данные).")
                 except (BrokenPipeError, ConnectionResetError, OSError) as e:
                     if LOGGING_ENABLED:
-                        print(f"[ERROR] Ошибка отправки пакета клиенту: {e} ")
+                        print(f"[ERROR] Ошибка отправки пакета клиенту: {e}")
                     is_client_active = False
                     client_socket.close()
                     client_socket = None
@@ -167,7 +167,7 @@ def server_main():
             elif not is_client_active:
                    # Если клиент неактивен, ждем новое подключение
                  # Основной цикл handle_client_loop будет ждать accept
-                 time.sleep(0.1) # Небольшая задержка, чтобы не  грузить CPU
+                 time.sleep(0.1) # Небольшая задержка, чтобы не грузить CPU
                  continue
 
             time.sleep(SEND_INTERVAL_MS / 1000.0)
@@ -178,10 +178,10 @@ def server_main():
 
         while True:
             if not is_client_active:
-                print("Сервер ожидает подключение клиента... ")
+                print("Сервер ожидает подключение клиента...")
                 try:
                     client_socket, addr = server_socket.accept()
-                    print(f"Подключен клиент: {addr} ")
+                    print(f"Подключен клиент: {addr}")
                     client_socket.settimeout(RECV_TIMEOUT_S) # Устанавливаем таймаут на recv
                     last_received_packet_time = time.time()
                     is_client_active   = True
@@ -193,13 +193,13 @@ def server_main():
                      # accept не использует timeout, но на всякий случай
                      continue
                 except Exception as e:
-                     print(f"[ERROR] Ошибка при подключении клиента: {e} ")
+                     print(f"[ERROR] Ошибка при подключении клиента: {e}")
                      continue
             else:
                 # Клиент активен, проверяем таймаут
                 current_time = time.time()
                 if current_time - last_received_packet_time  > heartbeat_timeout:
-                    print("[INFO] Таймаут клиента! Отключаю соединение. ")
+                    print("[INFO] Таймаут клиента! Отключаю соединение.")
                     is_client_active = False
                     if client_socket:
                         client_socket.close()
@@ -212,11 +212,11 @@ def server_main():
                     packet = find_header(client_socket, PACKET_SIZE_CLIENT_TO_SERVER, PROTOCOL_START_HEADER) # Используем заголовок из вставленного кода
                     if packet:
                         if LOGGING_ENABLED:
-                             print(f"[DEBUG] Сервер получил 10 байт: {packet[:10]} ")
+                             print(f"[DEBUG] Сервер получил 10 байт: {packet[:10]}")
                         last_received_packet_time = time.time() # Обновляем время получения
                     else:
                         # find_header вернул None -> соединение закрыто
-                        print("[INFO] Клиент отключился (соединение закрыто). ")
+                        print("[INFO] Клиент отключился (соединение закрыто).")
                         is_client_active = False
                         if client_socket:
                             client_socket.close()
@@ -228,7 +228,7 @@ def server_main():
                     pass # Не обновляем last_received_packet_time
                 except (ConnectionResetError, BrokenPipeError, OSError) as e:
                     if LOGGING_ENABLED:
-                        print(f"[ERROR] Ошибка получения от клиента: {e} ")
+                        print(f"[ERROR] Ошибка получения от клиента: {e}")
                     is_client_active = False
                     if client_socket:
                         client_socket.close()
@@ -241,7 +241,7 @@ def server_main():
     try:
         handle_client_loop()
     except KeyboardInterrupt:
-        print("\nСервер остановлен. ")
+        print("\nСервер остановлен.")
     finally:
         if client_socket:
             client_socket.close()
