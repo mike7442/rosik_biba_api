@@ -67,47 +67,6 @@ def pack_message(linear_speed, angular_speed, servo_positions, lift_height, rese
         print(f"pack_message struct error: {e}")
         return None
 
-def unpack_message(data):
-    """
-    Распаковывает байты в структурированные данные по заданному формату протокола.
-    Args:
-        data (bytes): Байтовое сообщение для распаковки.
-
-    Returns:
-        dict or None: Словарь с распакованными данными или None в случае ошибки.
-                      {'header': int, 'linear_speed': float, 'angular_speed': float,
-                       'servo_positions': list[int], 'lift_height': int, 'reserved': list[int]}
-    """
-    if len(data) != MESSAGE_LENGTH:
-        print(f"unpack_message error: Expected {MESSAGE_LENGTH} bytes, got {len(data)}")
-        return None
-
-    try:
-        unpacked = struct.unpack(MESSAGE_FORMAT, data)
-    except struct.error as e:
-        print(f"unpack_message struct error: {e}")
-        return None
-
-    header = unpacked[0]
-    if header != HEADER_VALUE:
-        print(f"unpack_message error: Expected header 0x{HEADER_VALUE:04X}, got 0x{header:04X}")
-        return None
-
-    linear_speed = unpacked[1]
-    angular_speed = unpacked[2]
-    servo_positions = list(unpacked[3:15])
-    lift_height = unpacked[15]
-    reserved = list(unpacked[16:])
-
-    return {
-        'header': header,
-        'linear_speed': linear_speed,
-        'angular_speed': angular_speed,
-        'servo_positions': servo_positions,
-        'lift_height': lift_height,
-        'reserved': reserved
-    }
-# --- КОНЕЦ ВСТАВКИ ---
 
 # --- Конфигурация ---
 SERVER_IP = '192.168.0.221'  # Принимать подключения на любом интерфейсе
