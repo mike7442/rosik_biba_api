@@ -215,13 +215,13 @@ def client_main():
         # Проверяем соединение
         if not is_connected:
             if LOGGING_ENABLED:
-                print("Клиент пытается подключиться... ")
+                print("Клиент пытается подключиться...")
             try:
                 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 client_socket.connect((SERVER_IP, SERVER_PORT))
                 client_socket.settimeout(RECV_TIMEOUT_S) # Устанавливаем таймаут на recv
                 if LOGGING_ENABLED:
-                    print("Клиент подключен к серверу. ")
+                    print("Клиент подключен к серверу.")
                 is_connected = True
                 # При успешном подключении сбрасываем время получения
                 last_received_packet_time = time.time()
@@ -230,10 +230,10 @@ def client_main():
                 # Поток запускается сразу после подключения
                 control_thread = threading.Thread(target=control_loop_thread, daemon=True)
                 control_thread.start()
-                print("Control loop thread started. ")
+                print("Control loop thread started.")
 
             except Exception as e:
-                print(f"[ERROR] Не удалось подключиться: {e}. Ждём 3 секунды перед повторной попыткой... ")
+                print(f"[ERROR] Не удалось подключиться: {e}. Ждём 3 секунды перед повторной попыткой...")
                 time.sleep(3) # Ждем 3 секунды перед новой попыткой
                 continue # Переходим к следующей итерации цикла
 
@@ -244,7 +244,7 @@ def client_main():
                 packet = find_header(client_socket, MESSAGE_LENGTH, PROTOCOL_START_HEADER) # Используем длину и заголовок из вставленного кода
                 if packet:
                     if LOGGING_ENABLED:
-                        print(f"[DEBUG] Клиент получил 46 байт (упакованные данные). ")
+                        print(f"[DEBUG] Клиент получил 46 байт (упакованные данные).")
                     # --- Распаковка данных ---
                     unpacked_data = unpack_message(packet)
                     if unpacked_data is not None:
@@ -253,10 +253,10 @@ def client_main():
                             CLIENT_RECEIVED_DATA.update(unpacked_data)
                         # --- Конец блокировки ---
                         if LOGGING_ENABLED:
-                            print(f"[DEBUG] Клиент распаковал данные: {CLIENT_RECEIVED_DATA} ")
+                            print(f"[DEBUG] Клиент распаковал данные: {CLIENT_RECEIVED_DATA}")
                     else:
                         if LOGGING_ENABLED:
-                            print("[ERROR] Не удалось распаковать полученные данные. ")
+                            print("[ERROR] Не удалось распаковать полученные данные.")
                         # Можно рассмотреть разрыв соединения при серии ошибок распаковки
                         # is_connected = False
                         # is_safe_to_move = False
@@ -266,7 +266,7 @@ def client_main():
                     last_received_packet_time = time.time() # Обновляем время получения
                 else:
                     # find_header вернул None -> соединение закрыто
-                    print("[INFO] Соединение с сервером потеряно (сервер закрыл соединение). ")
+                    print("[INFO] Соединение с сервером потеряно (сервер закрыл соединение).")
                     is_connected = False
                     is_safe_to_move = False # Сразу ставим в False при потере связи
                     client_socket.close()
@@ -276,7 +276,7 @@ def client_main():
                 # recv вернул timeout - это нормально, просто не получили пакет вовремя
                 pass # Не обновляем last_received_packet_time
             except (ConnectionResetError, BrokenPipeError, OSError) as e:
-                print(f"[ERROR] Ошибка получения от сервера: {e} ")
+                print(f"[ERROR] Ошибка получения от сервера: {e}")
                 is_connected = False
                 is_safe_to_move = False
                 client_socket.close()
@@ -287,11 +287,11 @@ def client_main():
             current_time = time.time()
             if current_time - last_received_packet_time <= safety_timeout:
                 if not is_safe_to_move:
-                    print("[SAFE] Движение разрешено. ")
+                    print("[SAFE] Движение разрешено.")
                 is_safe_to_move = True
             else:
                 if is_safe_to_move:
-                    print("[UNSAFE] Движение запрещено - связь потеряна. ")
+                    print("[UNSAFE] Движение запрещено - связь потеряна.")
                 is_safe_to_move = False
 
             # --- Печать глобального словаря ---
@@ -302,7 +302,7 @@ def client_main():
                     # Читаем под блокировкой для печати
                     with CLIENT_DATA_LOCK:
                         for key, value in CLIENT_RECEIVED_DATA.items():
-                             print(f"  {key}: {value} ")
+                             print(f"  {key}: {value}")
                     print("------------------------------")
                 print_counter = 0 # Сброс счетчика
             # -----------------------------------
@@ -313,9 +313,9 @@ def client_main():
                 packet_to_send = PROTOCOL_START_HEADER + payload_data # Используем заголовок из вставленного кода
                 client_socket.sendall(packet_to_send)
                 if LOGGING_ENABLED:
-                    print(f"[DEBUG] Клиент отправил 10 байт. ")
+                    print(f"[DEBUG] Клиент отправил 10 байт.")
             except (BrokenPipeError, ConnectionResetError, OSError) as e:
-                print(f"[ERROR] Ошибка отправки пакета серверу: {e} ")
+                print(f"[ERROR] Ошибка отправки пакета серверу: {e}")
                 is_connected = False
                 is_safe_to_move = False
                 client_socket.close()
