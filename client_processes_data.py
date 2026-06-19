@@ -11,6 +11,20 @@ HEADER_VALUE = struct.unpack('>H', PROTOCOL_START_HEADER)[0]
 MESSAGE_FORMAT = f'{ORDER}HffHHHHHHHHHHHHHBBBBBBBBBB' # Формат сообщения (46 байт)
 MESSAGE_LENGTH = struct.calcsize(MESSAGE_FORMAT) # Вычисляем длину: 46 байт
 
+# --- Конфигурация ---
+# SERVER_IP = '192.168.0.221' # Замените на IP вашего сервера
+SERVER_IP = '77.37.184.204'  # Принимать подключения на любом интерфейсе # <- Комментируем или удаляем дубль
+SERVER_PORT = 31415
+PACKET_SIZE_CLIENT_TO_SERVER = 10
+# PACKET_SIZE_SERVER_TO_CLIENT теперь определяется MESSAGE_LENGTH из вставленного кода (46 байт)
+# START_HEADER теперь определяется из вставленного кода (b'\xDE\xAD')
+HEARTBEAT_TIMEOUT_S = 0.5 # Максимальное время между получением пакетов от сервера
+SEND_INTERVAL_MS = 50
+RECV_TIMEOUT_S = 0.04 # Для recv с таймаутом
+# --- Логгирование ---
+LOGGING_ENABLED = 0  # Установите 1 для включения отладочных сообщений, 0 для отключения
+# --------------------
+
 def unpack_message(data):
     """
     Распаковывает байты в структурированные данные по заданному формату протокола.
@@ -53,19 +67,6 @@ def unpack_message(data):
     }
 # --- КОНЕЦ ВСТАВКИ ---
 
-# --- Конфигурация ---
-SERVER_IP = '192.168.0.221' # Замените на IP вашего сервера
-# SERVER_IP = '77.37.184.204'  # Принимать подключения на любом интерфейсе # <- Комментируем или удаляем дубль
-SERVER_PORT = 31415
-PACKET_SIZE_CLIENT_TO_SERVER = 10
-# PACKET_SIZE_SERVER_TO_CLIENT теперь определяется MESSAGE_LENGTH из вставленного кода (46 байт)
-# START_HEADER теперь определяется из вставленного кода (b'\xDE\xAD')
-HEARTBEAT_TIMEOUT_S = 0.5 # Максимальное время между получением пакетов от сервера
-SEND_INTERVAL_MS = 50
-RECV_TIMEOUT_S = 0.04 # Для recv с таймаутом
-# --- Логгирование ---
-LOGGING_ENABLED = 0  # Установите 1 для включения отладочных сообщений, 0 для отключения
-# --------------------
 
 def find_header(sock, packet_size, header):
     """Поиск заголовка и чтение оставшихся байт."""
