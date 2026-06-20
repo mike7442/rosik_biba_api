@@ -442,4 +442,4 @@ if __name__ == "__main__":
     server_thread = threading.Thread(target=server_main, daemon=True)
     server_thread.start()
     time.sleep(2)
-    data_updating
+    data_updating()
